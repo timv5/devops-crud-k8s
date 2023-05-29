@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-crud-k8s-deployment
+spec:
+  selector:
+    matchLabels:
+      app: devops-crud-k8s
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: devops-crud-k8s
+    spec:
+      containers:
+        - name: devops-crud-k8s
+          image: devops-crud-k8s:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              valueFrom :
+                configMapKeyRef :
+                  name : db-config
+                  key :  host
+            - name: DB_NAME
+              valueFrom :
+                configMapKeyRef :
+                  name : db-config
+                  key :  dbName
+            - name: DB_USERNAME
+              valueFrom :
+                secretKeyRef :
+                  name : mysql-secrets
+                  key :  username
+            - name: DB_PASSWORD
+              valueFrom :
+                secretKeyRef :
+                  name : mysql-secrets
+                  key :  password
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-crud-k8s-service
+spec:
+  selector:
+    app: devops-crud-k8s
+  ports:
+    - protocol: "TCP"
+      port: 8080
+      targetPort: 8080
+  type: NodePort

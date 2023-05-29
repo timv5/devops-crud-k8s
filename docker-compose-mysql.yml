@@ -1,0 +1,13 @@
+# This docker compose file is here just for testing purpose - kubernetes pull mysql image from dockerhub
+version: '3.8'
+
+services:
+  devops-crud-k8s-db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_DATABASE=books-db
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_USERNAME=root
+    ports:
+      - '3306:3306'
